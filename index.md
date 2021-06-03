@@ -1,37 +1,59 @@
-## Welcome to GitHub Pages
+## Lab 8
 
-You can use the [editor on GitHub](https://github.com/grantnelson53/cit281-lab8/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+In this lab, we learned about Promises, fetch, and node-fetch
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Source Code
 
-### Markdown
+    // #1 TODO: Declare fastify object from fastify, and execute
+    const fastify = require("fastify")();
+    // #2 TODO: Declare fetch object from node-fetch
+    const fetch = require('node-fetch');
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+    fastify.get("/photos", (request, reply) => {
+      // #3 TODO:
+      // Adapt the following code to attempt to retrieve
+      // all photos from JSONPlaceholder site
+      // using fetch, and handle returned Promise using:
+      // - two .then() chain methods, return 200
+      // - single .catch() chain method, return 404
 
-```markdown
-Syntax highlighted code block
+      fetch('https://jsonplaceholder.typicode.com/photos')
+      .then(response => {return response.json()})
+      .then(jsonFromResponse => {
+            reply
+            .code(200)
+            .header("Content-Type", "text/json; charset=utf-8")
+            .send({ error: "", statusCode: 200, photos: json }); })
+    }); 
 
-# Header 1
-## Header 2
-### Header 3
+    fastify.get("/photos/:id", (request, reply) => {
+      // #4 TODO:
+      // Adapt the following code to attempt to retrieve
+      // a single photo from JSONPlaceholder site
+      // using fetch, and handle returned Promise using:
+      // - single .then() chain method, return 200
+      // - single .catch() chain method, return 404
+      // You may also try to use Object.keys() to
+      // ensure JSONPlaceholder returns an object with
+      // properties. An empty object returned from
+      // JSONPlaceholder means that the passed photo ID
+      // was invalid. Your server would also return
+      // a 404 status code for an invalid Photo ID.
 
-- Bulleted
-- List
+      const { id = "" } = request.params;
+      reply
+        .code(200)
+        .header("Content-Type", "text/json; charset=utf-8")
+        .send({ error: "", statusCode: 200, photo: {} });
+    });
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/grantnelson53/cit281-lab8/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+    // Start server and listen to requests using Fastify
+    const listenIP = "localhost";
+    const listenPort = 8080;
+    fastify.listen(listenPort, listenIP, (err, address) => {
+      if (err) {
+        console.log(err);
+        process.exit(1);
+      }
+      console.log(`Server listening on ${address}`);
+    });
